@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
   pages: write
 
 concurrency: trends-answer
@@ -20,6 +21,15 @@ jobs:
       TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       CHAT: ${{ vars.TELEGRAM_CHAT_ID }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Ask about any list not sent yet
+        continue-on-error: true
+        run: |
+          gh pr list --repo "$GITHUB_REPOSITORY" --state open --json number,headRefName,labels \
+            --jq '.[] | select(.headRefName | startswith("trends/")) | select([.labels[].name] | index("asked-on-telegram") | not) | .number' |
+          while read -r pr; do .github/scripts/ask.sh "$pr" || true; done
       - name: Publish or skip, as tapped
         run: |
           set -euo pipefail
