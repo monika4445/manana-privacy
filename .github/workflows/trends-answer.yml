@@ -25,7 +25,17 @@ jobs:
           set -euo pipefail
           api="https://api.telegram.org/bot$TOKEN"
           say() { curl -s -X POST "$api/sendMessage" --data-urlencode "chat_id=$CHAT" --data-urlencode "text=$1" > /dev/null || true; }
-          curl -sf "$api/getUpdates?timeout=0" > updates.json
+          for try in 1 2 3; do
+            curl -s "$api/getUpdates?timeout=0" > updates.json
+            wait=$(jq -r '.parameters.retry_after // empty' updates.json)
+            [ -n "$wait" ] || break
+            echo "Telegram asks to wait $wait s"
+            sleep "$((wait + 1))"
+          done
+          if ! jq -e '.ok' updates.json > /dev/null; then
+            echo "Telegram said: $(jq -r '.description // "no answer"' updates.json)"
+            exit 1
+          fi
           last=$(jq '[.result[].update_id] | max // empty' updates.json)
           jq -c '.result[] | select(.callback_query) | .callback_query' updates.json | while read -r q; do
             from=$(jq -r '.from.id' <<<"$q")
