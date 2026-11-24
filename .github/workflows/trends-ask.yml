@@ -35,7 +35,11 @@ jobs:
           lines=$(jq -r '.trends | to_entries[] | "\(.key + 1). \(.value.title.en)\n    \(.value.template)\(if .value.song then " · song: \(.value.song)" else "" end)\(if .value.sound then " · Instagram sound: \(.value.sound)" else "" end)"' list.json)
           text=$(printf 'Manana: Top 5 for %s is ready\n\n%s\n\nPublish it to every phone? Your answer is acted on within an hour.' "$month" "$lines")
           markup=$(jq -cn --arg pr "$PR" --arg url "$url" '{inline_keyboard: [[{text: "Publish", callback_data: ("publish:" + $pr)}, {text: "Skip", callback_data: ("skip:" + $pr)}], [{text: "See it on GitHub", url: $url}]]}')
-          curl -sf -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
+          answer=$(curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
             --data-urlencode "chat_id=$CHAT" \
             --data-urlencode "text=$text" \
-            --data-urlencode "reply_markup=$markup" > /dev/null
+            --data-urlencode "reply_markup=$markup")
+          if ! jq -e '.ok' <<<"$answer" > /dev/null; then
+            echo "Telegram said: $(jq -r '.description // "no answer"' <<<"$answer")"
+            exit 1
+          fi
