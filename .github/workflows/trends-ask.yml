@@ -27,6 +27,8 @@ jobs:
       - name: Send the list with Publish and Skip buttons
         run: |
           set -euo pipefail
+          me=$(curl -s --max-time 60 "https://api.telegram.org/bot$TOKEN/getMe")
+          echo "Bot: $(jq -r '.result.username // .description' <<<"$me")"
           head=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq .headRefOid)
           url=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json url --jq .url)
           gh api "repos/$GITHUB_REPOSITORY/contents/trends.json?ref=$head" -H "Accept: application/vnd.github.raw" > list.json
