@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   ask:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'trends/')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'trends/') || startsWith(github.head_ref, 'claude/trends')
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
