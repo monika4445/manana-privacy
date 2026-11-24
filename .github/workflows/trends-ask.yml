@@ -1,0 +1,41 @@
+name: Ask on Telegram about a new trends list
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    paths: [trends.json]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number to ask about
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  ask:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'trends/')
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      CHAT: ${{ vars.TELEGRAM_CHAT_ID }}
+      PR: ${{ github.event.pull_request.number || inputs.pr }}
+    steps:
+      - name: Send the list with Publish and Skip buttons
+        run: |
+          set -euo pipefail
+          head=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq .headRefOid)
+          url=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json url --jq .url)
+          gh api "repos/$GITHUB_REPOSITORY/contents/trends.json?ref=$head" -H "Accept: application/vnd.github.raw" > list.json
+          jq -e '.version == 1 and (.trends | length) >= 3' list.json > /dev/null
+          month=$(jq -r '.month' list.json)
+          lines=$(jq -r '.trends | to_entries[] | "\(.key + 1). \(.value.title.en)\n    \(.value.template)\(if .value.song then " · song: \(.value.song)" else "" end)\(if .value.sound then " · Instagram sound: \(.value.sound)" else "" end)"' list.json)
+          text=$(printf 'Manana: Top 5 for %s is ready\n\n%s\n\nPublish it to every phone? Your answer is acted on within an hour.' "$month" "$lines")
+          markup=$(jq -cn --arg pr "$PR" --arg url "$url" '{inline_keyboard: [[{text: "Publish", callback_data: ("publish:" + $pr)}, {text: "Skip", callback_data: ("skip:" + $pr)}], [{text: "See it on GitHub", url: $url}]]}')
+          curl -sf -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
+            --data-urlencode "chat_id=$CHAT" \
+            --data-urlencode "text=$text" \
+            --data-urlencode "reply_markup=$markup" > /dev/null

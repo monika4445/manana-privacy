@@ -1,0 +1,68 @@
+name: Act on the Telegram answer
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+
+concurrency: trends-answer
+
+jobs:
+  answer:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      CHAT: ${{ vars.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Publish or skip, as tapped
+        run: |
+          set -euo pipefail
+          api="https://api.telegram.org/bot$TOKEN"
+          say() { curl -s -X POST "$api/sendMessage" --data-urlencode "chat_id=$CHAT" --data-urlencode "text=$1" > /dev/null || true; }
+          curl -sf "$api/getUpdates?timeout=0" > updates.json
+          last=$(jq '[.result[].update_id] | max // empty' updates.json)
+          jq -c '.result[] | select(.callback_query) | .callback_query' updates.json | while read -r q; do
+            from=$(jq -r '.from.id' <<<"$q")
+            data=$(jq -r '.data' <<<"$q")
+            id=$(jq -r '.id' <<<"$q")
+            curl -s -X POST "$api/answerCallbackQuery" --data-urlencode "callback_query_id=$id" > /dev/null || true
+            [ "$from" = "$CHAT" ] || continue
+            action=${data%%:*}
+            pr=${data#*:}
+            [[ "$pr" =~ ^[0-9]+$ ]] || continue
+            info=$(gh pr view "$pr" --repo "$GITHUB_REPOSITORY" --json state,headRefName,files,headRefOid) || continue
+            state=$(jq -r .state <<<"$info")
+            branch=$(jq -r .headRefName <<<"$info")
+            files=$(jq -r '[.files[].path] | join(",")' <<<"$info")
+            if [ "$state" != "OPEN" ]; then continue; fi
+            if [[ "$branch" != trends/* || "$files" != "trends.json" ]]; then
+              say "Not published: that proposal changes more than the trends list."
+              continue
+            fi
+            if [ "$action" = "publish" ]; then
+              head=$(jq -r .headRefOid <<<"$info")
+              gh api "repos/$GITHUB_REPOSITORY/contents/trends.json?ref=$head" -H "Accept: application/vnd.github.raw" > list.json || continue
+              if ! jq -e '.version == 1 and (.trends | length) >= 3' list.json > /dev/null; then
+                say "Not published: the list is not valid."
+                continue
+              fi
+              if ! gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash; then
+                say "Could not publish it. I will look into it."
+                continue
+              fi
+              gh api -X POST "repos/$GITHUB_REPOSITORY/pages/builds" > /dev/null || true
+              say "Published. Every Manana phone gets the new Top 5 within a day."
+            elif [ "$action" = "skip" ]; then
+              gh pr close "$pr" --repo "$GITHUB_REPOSITORY" --comment "Skipped on Telegram." || continue
+              say "Skipped. The current list stays."
+            fi
+          done
+          if [ -n "$last" ]; then
+            curl -s "$api/getUpdates?offset=$((last + 1))&timeout=0" > /dev/null
+          fi
