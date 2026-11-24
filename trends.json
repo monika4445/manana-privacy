@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "month": "2026-11",
+  "trends": [
+    {
+      "template": "edit_flash_dump",
+      "title": {
+        "en": "Fast photo dump that cuts on the beat",
+        "ru": "Быстрый фотодамп в такт музыке",
+        "hy": "Արագ ֆոտոդամփ՝ երաժշտության տակտով",
+        "fr": "Photo dump rapide, coupé sur le beat"
+      },
+      "song": "Glow Up"
+    },
+    {
+      "template": "before_after",
+      "title": {
+        "en": "Before and after, revealed on the beat drop",
+        "ru": "До и после с раскрытием на дропе",
+        "hy": "Առաջ և հետո՝ բիթի պահին",
+        "fr": "Avant/après, révélé sur le drop"
+      },
+      "song": "Main Character"
+    },
+    {
+      "template": "edit_word_drop",
+      "title": {
+        "en": "Silent text Reel: big words, one at a time",
+        "ru": "Текстовый рилс: крупные слова по одному",
+        "hy": "Տեքստային ռիլս՝ մեծ բառեր, մեկ առ մեկ",
+        "fr": "Reel texte : de grands mots, un par un"
+      },
+      "song": "Left Right"
+    },
+    {
+      "template": "edit_day_hours",
+      "title": {
+        "en": "A day in my life, hour by hour",
+        "ru": "Мой день по часам",
+        "hy": "Իմ օրը՝ ժամ առ ժամ",
+        "fr": "Ma journée, heure par heure"
+      },
+      "song": "Coffee Date"
+    },
+    {
+      "template": "recap",
+      "title": {
+        "en": "Your year in photos, on the beat",
+        "ru": "Ваш год в фото, в такт музыке",
+        "hy": "Ձեր տարին լուսանկարներով՝ երաժշտության տակտով",
+        "fr": "Votre année en photos, sur le beat"
+      },
+      "song": "First Light"
+    }
+  ]
+}
