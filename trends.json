@@ -1,56 +1,56 @@
 {
   "version": 1,
-  "month": "2026-11",
+  "month": "2026-12",
   "trends": [
     {
-      "template": "edit_flash_dump",
+      "template": "recap",
       "title": {
-        "en": "Fast photo dump that cuts on the beat",
-        "ru": "Быстрый фотодамп в такт музыке",
-        "hy": "Արագ ֆոտոդամփ՝ երաժշտության տակտով",
-        "fr": "Photo dump rapide, coupé sur le beat"
+        "en": "Your 2026 recap, on the beat",
+        "ru": "Ваш 2026 год в фото, в такт музыке",
+        "hy": "Ձեր 2026 թվականը՝ երաժշտության տակտով",
+        "fr": "Votre année 2026, sur le beat"
       },
-      "song": "Glow Up"
+      "song": "First Light"
     },
     {
-      "template": "before_after",
+      "template": "edit_day_in_my_life",
       "title": {
-        "en": "Before and after, revealed on the beat drop",
-        "ru": "До и после с раскрытием на дропе",
-        "hy": "Առաջ և հետո՝ բիթի պահին",
-        "fr": "Avant/après, révélé sur le drop"
-      },
-      "song": "Main Character"
-    },
-    {
-      "template": "edit_word_drop",
-      "title": {
-        "en": "Silent text Reel: big words, one at a time",
-        "ru": "Текстовый рилс: крупные слова по одному",
-        "hy": "Տեքստային ռիլս՝ մեծ բառեր, մեկ առ մեկ",
-        "fr": "Reel texte : de grands mots, un par un"
-      },
-      "song": "Left Right"
-    },
-    {
-      "template": "edit_day_hours",
-      "title": {
-        "en": "A day in my life, hour by hour",
-        "ru": "Мой день по часам",
-        "hy": "Իմ օրը՝ ժամ առ ժամ",
-        "fr": "Ma journée, heure par heure"
+        "en": "Vlogmas: a December day in my life",
+        "ru": "Влогмас: мой декабрьский день",
+        "hy": "Վլոգմաս՝ իմ դեկտեմբերյան օրը",
+        "fr": "Vlogmas : ma journée de décembre"
       },
       "song": "Coffee Date"
     },
     {
-      "template": "recap",
+      "template": "winter_glow",
       "title": {
-        "en": "Your year in photos, on the beat",
-        "ru": "Ваш год в фото, в такт музыке",
-        "hy": "Ձեր տարին լուսանկարներով՝ երաժշտության տակտով",
-        "fr": "Votre année en photos, sur le beat"
+        "en": "Cosy winter and holiday moments",
+        "ru": "Уютные зимние и праздничные моменты",
+        "hy": "Ջերմ ձմեռային և տոնական պահեր",
+        "fr": "Moments d'hiver et de fêtes, tout doux"
       },
-      "song": "First Light"
+      "song": "Lilac Sky"
+    },
+    {
+      "template": "product_trio",
+      "title": {
+        "en": "Last-minute gift ideas from your shop",
+        "ru": "Идеи подарков в последний момент",
+        "hy": "Նվերների գաղափարներ վերջին պահին",
+        "fr": "Idées cadeaux de dernière minute"
+      },
+      "song": "Sunny Side"
+    },
+    {
+      "template": "edit_flash_dump",
+      "title": {
+        "en": "New Year's Eve photo dump, fast cuts",
+        "ru": "Новогодний фотодамп с быстрыми склейками",
+        "hy": "Ամանորյա ֆոտոդամփ՝ արագ կադրերով",
+        "fr": "Photo dump du Nouvel An, coupes rapides"
+      },
+      "song": "Mirror Ball"
     }
   ]
 }
